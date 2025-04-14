@@ -3,6 +3,8 @@ import Login from '../pages/Login.vue'
 import Dashboard from '../pages/Dashboard.vue'
 import DefaultLayout from '../layouts/DefaultLayout.vue' // ⬅️ novo layout pai
 import Pacientes from '../pages/Pacientes.vue'
+import Medicos from '../pages/Medicos.vue'
+import Consutas from '../pages/Consultas.vue'
 
 const routes = [
   // Rota pública
@@ -17,7 +19,8 @@ const routes = [
       { path: 'dashboard', component: Dashboard },
       // outras páginas:
       { path: 'pacientes', component: Pacientes },
-      // { path: 'medicos', component: Medicos }
+      { path: 'medicos', component: Medicos },
+      { path: 'consultas', component: Consutas }
     ]
   }
 ]

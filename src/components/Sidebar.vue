@@ -5,6 +5,8 @@
       <ul class="space-y-2">
         <li><router-link to="/dashboard" class="block hover:underline">Dashboard</router-link></li>
         <li><router-link to="/pacientes" class="block hover:underline">Pacientes</router-link></li>
+        <li><router-link to="/medicos" class="block hover:underline">Medicos</router-link></li>
+        <li><router-link to="/consultas" class="block hover:underline">Consultas</router-link></li>
         <li><router-link to="/" class="block hover:underline">Sair</router-link></li>
       </ul>
     </nav>

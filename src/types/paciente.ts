@@ -1,6 +1,7 @@
 // DTOs para uso no frontend
 
 export interface PacienteResponseDTO {
+    id: number
     nome: string
     cpf: string
     email: string

@@ -1,0 +1,31 @@
+paginas:{
+    paciente, consulta, medico
+}
+
+listagen de paciente - ok
+cadastro de paciente - ok
+listagem de medico - ok
+cadastro de medico - ok
+listagem de consulta - ok
+cadastro de consulta - ok
+
+realizar cadastro de funcionario
+listagem de funcionario permitido apenas para role -admin
+pagina para alteração de senha
+pagina para recuperação de senha
+pagina especifica para médico, um check na tela de login quando o login for do médico
+direcionar paara a sua pagina, onde mostra as suas consultas do dia e fazer as devidas alterações
+anotações e etc
+
+alterar a página de login para buscar a sua clica por nome e etc e inserir o id
+
+filtros de nome, cpf e especialidade na pagina de medico
+filtros de nome e cpf na pagina de paciente
+filtros de data, hora, nomePaciente, nomeMedico, status, especialidade na página de consultas
+colocar nome da pessoa logada em cima
+
+
+
+criar o docker
+criar pipeline
+colocar na vps

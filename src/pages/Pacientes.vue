@@ -7,13 +7,7 @@
       </button>
     </div>
 
-    <div v-if="isLoading" class="flex justify-center py-6">
-      <svg class="animate-spin h-6 w-6 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none"
-        viewBox="0 0 24 24">
-        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
-      </svg>
-    </div>
+    <LoadingSpinner v-if="isLoading" />
 
     <table class="min-w-full bg-white shadow rounded overflow-hidden">
       <thead class="bg-blue-900 text-white">
@@ -52,6 +46,8 @@ import { ref, onMounted } from 'vue'
 import { buscarPacientes } from '../service/pacienteService'
 import type { PacienteResponseDTO } from '../types/paciente'
 import PacienteModal from '../components/PacienteModal.vue'
+import LoadingSpinner from '../components/LoadingSpinner.vue'
+
 
 const pacientes = ref<PacienteResponseDTO[]>([])
 const modalVisivel = ref(false)
