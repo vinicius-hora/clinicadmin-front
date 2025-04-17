@@ -15,7 +15,7 @@
       <form @submit.prevent="login" class="space-y-4">
         <div>
           <label class="block mb-1 text-sm font-medium text-gray-700">Login</label>
-          <input v-model="email" type="string" placeholder="Login"
+          <input v-model="email" type="text" placeholder="Login"
             class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" />
         </div>
         <div>
@@ -23,11 +23,38 @@
           <input v-model="password" type="password" placeholder="••••••••"
             class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" />
         </div>
+
         <div>
-          <label class="block mb-1 text-sm font-medium text-gray-700">ID da Clínica</label>
-          <input v-model.number="clinicaId" type="number" placeholder="ID da clínica"
-            class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          <label class="block mb-1 text-sm font-medium text-gray-700">Buscar clínica por</label>
+          <div class="flex gap-4 text-sm text-gray-800">
+            <label><input type="radio" value="id" v-model="tipoBuscaClinica" /> ID</label>
+            <label><input type="radio" value="nome" v-model="tipoBuscaClinica" /> Nome</label>
+            <label><input type="radio" value="cnpj" v-model="tipoBuscaClinica" /> CNPJ</label>
+          </div>
         </div>
+
+        <div>
+          <label class="block mb-1 text-sm font-medium text-gray-700">Buscar clínica</label>
+          <input
+            v-model="valorBuscaClinica"
+            @input="buscarClinicas"
+            placeholder="Digite para buscar..."
+            class="w-full px-4 py-2 border border-gray-300 rounded"
+          />
+
+          <ul v-if="clinicas.length > 0" class="mt-2 border rounded shadow bg-white max-h-40 overflow-y-auto">
+            <li v-for="clinica in clinicas" :key="clinica.id"
+                class="px-4 py-2 hover:bg-blue-100 cursor-pointer"
+                @click="selecionarClinica(clinica)">
+              {{ clinica.nome }} - {{ clinica.cnpj }}
+            </li>
+          </ul>
+        </div>
+
+        <div v-if="clinicaSelecionada">
+          <p class="text-sm text-gray-700">Clínica selecionada: <strong>{{ clinicaSelecionada.nome }}</strong></p>
+        </div>
+
         <div class="text-right">
           <a href="#" class="text-sm text-blue-600 hover:underline">Esqueceu sua senha?</a>
         </div>
@@ -44,14 +71,56 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import type { LoginRequestDTO } from '../types/auth'
-import { logar } from '../service/authService'
+import { logar, buscarUsuarioLogado } from '../service/authService'
+import {
+  buscarClinicaPorID,
+  buscarClinicaPorNome,
+  buscarClinicaPorCNPJ
+} from '../service/clinicaService'
+import type { ClinicaResponseDTO } from '../types/clinica'
 
 const email = ref('')
 const password = ref('')
-const clinicaId = ref(1)
+const clinicaId = ref<number | null>(null)
 const router = useRouter()
 
+const tipoBuscaClinica = ref<'id' | 'nome' | 'cnpj'>('id')
+const valorBuscaClinica = ref('')
+const clinicas = ref<ClinicaResponseDTO[]>([])
+const clinicaSelecionada = ref<ClinicaResponseDTO | null>(null)
+
+const buscarClinicas = async () => {
+  clinicas.value = []
+  clinicaSelecionada.value = null
+
+  if (valorBuscaClinica.value.length < 3 && tipoBuscaClinica.value !== 'id') return
+
+  try {
+    if (tipoBuscaClinica.value === 'id') {
+      const clinica = await buscarClinicaPorID(Number(valorBuscaClinica.value))
+      clinicas.value = [clinica]
+    } else if (tipoBuscaClinica.value === 'nome') {
+      const clinica = await buscarClinicaPorNome(valorBuscaClinica.value)
+      clinicas.value = [clinica]
+    } else if (tipoBuscaClinica.value === 'cnpj') {
+      const clinica = await buscarClinicaPorCNPJ(valorBuscaClinica.value)
+      clinicas.value = [clinica]
+    }
+  } catch (error) {
+    clinicas.value = []
+  }
+}
+
+const selecionarClinica = (clinica: ClinicaResponseDTO) => {
+  clinicaSelecionada.value = clinica
+  clinicaId.value = clinica.id
+  clinicas.value = []
+  valorBuscaClinica.value = clinica.nome
+}
+
 const login = async () => {
+  if (!clinicaId.value) return alert('Selecione uma clínica válida.')
+
   const payload: LoginRequestDTO = {
     userName: email.value,
     passWord: password.value,
@@ -61,7 +130,14 @@ const login = async () => {
   try {
     const data = await logar(payload)
     localStorage.setItem('token', data.token)
-    router.push('/dashboard')
+    const usuario = await buscarUsuarioLogado()
+    localStorage.setItem('usuario', JSON.stringify(usuario))
+
+    if (usuario.role === 'MEDICO') {
+      router.push('/consultas-medico')
+    } else {
+      router.push('/dashboard')
+    }
   } catch (error) {
     alert(error instanceof Error ? error.message : 'Erro desconhecido.')
   }

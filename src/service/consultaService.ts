@@ -64,3 +64,24 @@ export const excluirConsultaPorId = async (id: number): Promise<void> => {
     })
     if (!response.ok) throw new Error('Erro ao excluir consulta')
 }
+
+export const buscarConsultasDoMedico = async (): Promise<ConsultaResponseDTO[]> => {
+    const token = localStorage.getItem('token')
+    try {
+      const response = await fetch(`${API_URL}/v1/consulta/medico`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+  
+      if (!response.ok) {
+        const erro = await response.json().catch(() => ({ message: 'Erro desconhecido' }))
+        throw new Error(erro.message || 'Erro ao buscar consultas do médico')
+      }
+  
+      return await response.json()
+    } catch (error) {
+      throw error instanceof Error ? error : new Error('Erro desconhecido ao buscar consultas do médico')
+    }
+  }
+  
